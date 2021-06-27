@@ -1,0 +1,23 @@
+{
+  "name": "@ic3/reporting-api",
+  "version": "8.0.0-alpha.1",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@material-ui/core": "5.0.0-alpha.38",
+    "@types/googlemaps": "3.43.3",
+    "@types/markerclustererplus": "2.1.33",
+    "@types/react": "17.0.11",
+    "copy-files-from-to": "3.2.0",
+    "del-cli": "4.0.0",
+    "typescript": "4.3.4"
+  },
+  "scripts": {
+    "build icCube API": "del-cli dist && npx tsc",
+    "clean": "del-cli dist"
+  }
+}
