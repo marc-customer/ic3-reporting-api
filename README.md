@@ -1,5 +1,7 @@
-## ic3 Reporting API
+## icCube Dashboards API
 
-#### 8.0.0-alpha.1
+The API for accessing the icCube Dashboards.
+
+See this [page](./doc/TOC.md) for a detailed documentation of the API.
 
 _
