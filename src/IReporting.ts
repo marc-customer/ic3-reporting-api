@@ -1,4 +1,4 @@
-import {ApiVersion} from "./ApiVersion";
+import ReportingVersion from "./ReportingVersion";
 
 export interface IReportDefinition {
 
@@ -65,7 +65,7 @@ export interface IOpenReportAppOptions {
  */
 export interface IReporting {
 
-    getApiVersion(): ApiVersion;
+    getVersion(): ReportingVersion;
 
     openReport(options: IOpenReportOptions): void;
 

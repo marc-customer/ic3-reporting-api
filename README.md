@@ -1,7 +1,5 @@
-## icCube Dashboards API
+## icCube Dashboards Public API
 
-The API for accessing the icCube Dashboards.
-
-See this [page](./doc/TOC.md) for a detailed documentation of the API.
+See this [page](./doc/Overview.md) for a detailed documentation of the API.
 
 _

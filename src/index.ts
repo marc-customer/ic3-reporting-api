@@ -1,5 +1,4 @@
 export * from "./ApiUtils";
-export * from "./ApiVersion";
 export * from "./IcEvent";
 export * from "./ILocalizationManager";
 export * from "./IPluginDefinition";
@@ -27,6 +26,7 @@ export * from "./PublicTidyTableInteractions";
 export * from "./PublicTidyTableTypes";
 export * from "./PublicTidyTree";
 export * from "./RemoteContainerUtils";
+export * from "./ReportingVersion";
 
 export * from "./theme/ThemeAlertDialog"
 export * from "./theme/ThemeApp"

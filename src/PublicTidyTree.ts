@@ -68,14 +68,6 @@ export class TidyTree {
     }
 
     /**
-     * A unique id for each node of the tree
-     * returns levelDepth + "--" + node.nodeLabel
-     */
-    static uniqueId(node: TidyTreeNode, levelDepth: number): string {
-        return levelDepth + "--" + node.nodeLabel;
-    }
-
-    /**
      * Performs the specified action on each node of the tree
      *
      * if callbackfn return false, it will not perform a foreach on it's children
@@ -92,6 +84,14 @@ export class TidyTree {
         if (callbackfn(this.root, 0, undefined, 0) !== false) {
             forEachNested(this.root.children, 1, this.root, callbackfn);
         }
+    }
+
+    /**
+     * A unique id for each node of the tree
+     * returns levelDepth + "--" + node.nodeLabel
+     */
+    static uniqueId(node: TidyTreeNode, levelDepth: number): string {
+        return levelDepth + "--" + node.nodeLabel;
     }
 
     /**

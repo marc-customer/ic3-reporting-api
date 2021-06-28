@@ -1,8 +1,11 @@
 import {IPluginDefinition} from "./IPluginDefinition";
-import {ApiVersion} from "./ApiVersion";
+import ReportingVersion from "./ReportingVersion";
 
 export interface IVersionedPluginDefinition extends IPluginDefinition {
 
-    version: ApiVersion;
+    /**
+     * The version of the API used while building the customer's plugin module.
+     */
+    apiVersion: ReportingVersion;
 
 }
