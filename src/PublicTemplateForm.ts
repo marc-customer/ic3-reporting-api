@@ -105,7 +105,7 @@ export type FormFields<T extends FormFieldObject> = {
         Required<T>[key] extends FormFieldObject ? Omit<IFormEmbeddedFieldDef<Required<T>[key]>, 'fieldPath'> :
             Required<T>[key] extends boolean ? Omit<IFormBooleanFieldDef, 'fieldPath'> :
                 Required<T>[key] extends number ? Omit<IFormNumberFieldDef, 'fieldPath'> :
-                    Required<T>[key] extends string ? Omit<IFormStringFieldDef, 'fieldPath'> :
+                    Required<T>[key] extends string ? Omit<IFormStringFieldDef, 'fieldPath'> | Omit<IFormMuiVariantFieldDef, 'fieldPath'> | Omit<IFormMarkdownFieldDef, 'fieldPath'> :
                         Required<T>[key] extends string[] ? Omit<IFormOptionFieldDef, 'fieldPath'> | Omit<IFormPaletteEditorFieldDef, 'fieldPath'> :
 
                             never /* type not supported */

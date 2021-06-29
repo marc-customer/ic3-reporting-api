@@ -17,7 +17,7 @@ export interface IPublicReactChartTemplate<T extends FormFieldObject> {
     /**
      * here goes the rendering, if it´s a react component return a ReactElement
      */
-    render: (options: IChartVisualizationTypedInput<T>, widgetHeader: string, props: ChartTemplateWidgetProps) => ReactElement;
+    reactElement: (data: IWidgetTemplateTidyData, widgetFormOptions: T, widgetHeader: string, props: ChartTemplateWidgetProps) => ReactElement;
 
 }
 
@@ -46,7 +46,7 @@ export interface IPublicWidgetReactTemplateDefinition<T extends FormFieldObject>
 
 export interface IPublicWidgetJsTemplateDefinition<T extends FormFieldObject> extends IPublicCommonWidgetTemplateDefinition {
 
-    jsCode: (context: IWidgetPublicContext, container: any) => IPublicJsChartTemplate<T>;
+    jsCode: (context: IWidgetPublicContext, container: HTMLDivElement) => IPublicJsChartTemplate<T>;
 
     reactComponent?: false;
 }
@@ -171,6 +171,15 @@ export interface IChartVisualizationInput {
 
     options: { [key: string]: any };
 }
+
+export interface IWidgetTemplateTidyData {
+
+    table: ITidyTable;
+    inter: ITidyTableInteraction;
+
+    mapping: ChartTemplateDataMapping;
+}
+
 
 export interface IChartVisualizationTypedInput<T extends FormFieldObject> {
 
