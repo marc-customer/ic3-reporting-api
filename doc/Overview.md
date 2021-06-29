@@ -2,11 +2,20 @@
 
 The icCube Dashboards API allows for:
 
-- embedding icCube Dashboards into a Web Application,
-- developing an adding themes, custom widgets (charts, maps, etc...), data transformations, etc...
+- developing new themes, widgets (charts, maps, etc...), data transformations, etc...
+- embedding icCube Dashboards into a Web application.
 
-### Getting Started
+### Plugin Dev. Kit
 
-    npm ...
+The plugin dev. kit allows for developing new themes, new widgets (i.e., charts, maps, etc), new data transformations.
+The plugin can be deployed at runtime into an existing icCube dashboards application for a complete customization.
+
+The dev. kit documentation is available [here](./plugin/Overview.md).
+
+### Embedding icCube Dashboards
+
+The public API allows for embedding the icCube Dashboards into an existing Web application.
+
+The API documentation is available [here](./embed/Overview.md).
 
 _
