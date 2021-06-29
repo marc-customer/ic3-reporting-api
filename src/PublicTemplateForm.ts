@@ -11,6 +11,107 @@ export function formFieldIsSelection(field: IFormFieldDef<any>) {
     return field.group === IFormFieldGroupTypes.Selection;
 }
 
+export interface IFormFieldDef<VALUE_TYPE> {
+
+    /**
+     * The path of the field within the edited bean.
+     */
+    fieldPath: string;
+
+    /**
+     * The default value defined at field level (note: can be defined at Theme level as well).
+     */
+    defaultValue?: VALUE_TYPE;
+
+    /**
+     * Override fieldPath to search for a default value in the Theme.
+     */
+    defaultValuePath?: string;
+
+    /**
+     * The optional group a field belongs too
+     */
+    group?: string;
+
+    /**
+     * When defined, the value is added as a prefix to the fieldPath to defined the localization tag.
+     */
+    fieldPrefixTag?: IFormFieldGroupTypes | string;
+
+    /**
+     * When defined, this tag is used for localization
+     */
+    localizationTag?: string;
+
+    /**
+     * Default: "string".
+     */
+    fieldType: FormFieldType;
+
+    /**
+     * Override default localization.
+     */
+    fieldDescription?: string;
+
+    /**
+     * Default: false
+     */
+    mandatory?: boolean;
+
+    /**
+     * Default: false
+     */
+    readOnly?: boolean;
+
+    /**
+     * An optional field path value. The value of this field depends on the value of the dependsOn field.
+     */
+    dependsOn?: string;
+
+    /**
+     * When defined a function that returns the visibility of the field according to the dependsOn value.
+     */
+    dependsOnVisibility?: boolean | ((dependsOnValue?: any) => boolean);
+
+    /**
+     * When defined a function that returns the visibility of the field.
+     */
+    visibility?: boolean | ((context: IWidgetEditorPublicContext) => boolean);
+
+    /**
+     * When defined the content of the field is translated (using context.translateContent).
+     */
+    translated?: boolean;
+
+}
+
+export interface FormFieldObject {
+
+    // we need this so extends FormFieldObject works (typescript uses the definition of the interface not it's name)
+    readonly '0242ac130003': '0242ac130003';
+
+}
+
+export type FormFields<T extends FormFieldObject> = {
+    [key in keyof Omit<T, '0242ac130003'>]-?:   // make the key mandatory even though the field is optional
+    (
+        // defaultValue mandatory if the field is non nullable in T
+        Required<T>[key] extends FormFieldObject ? { defaultValue?: any } :
+            undefined extends NonNullable<T>[key] ? { defaultValue?: any } : { defaultValue: unknown }
+        )
+    &
+    (
+        // matching T type with FormField type
+        Required<T>[key] extends FormFieldObject ? Omit<IFormEmbeddedFieldDef<Required<T>[key]>, 'fieldPath'> :
+            Required<T>[key] extends boolean ? Omit<IFormBooleanFieldDef, 'fieldPath'> :
+                Required<T>[key] extends number ? Omit<IFormNumberFieldDef, 'fieldPath'> :
+                    Required<T>[key] extends string ? Omit<IFormStringFieldDef, 'fieldPath'> :
+                        Required<T>[key] extends string[] ? Omit<IFormOptionFieldDef, 'fieldPath'> | Omit<IFormPaletteEditorFieldDef, 'fieldPath'> :
+
+                            never /* type not supported */
+        )
+};
+
 export enum IFormFieldGroupTypes {
     Selection = 'selection',
     FilterGeneralOption = 'filterGeneralOptionsGroup',
@@ -200,80 +301,6 @@ export function isTidyTableExprNumeric(type: FormFieldType) {
 export function isTidyTableExprScale(type: FormFieldType) {
     return type === "tidyTableScaleRowExpr"
         ;
-}
-
-export interface IFormFieldDef<VALUE_TYPE> {
-
-    /**
-     * The path of the field within the edited bean.
-     */
-    fieldPath: string;
-
-    /**
-     * The default value defined at field level (note: can be defined at Theme level as well).
-     */
-    defaultValue?: VALUE_TYPE;
-
-    /**
-     * Override fieldPath to search for a default value in the Theme.
-     */
-    defaultValuePath?: string;
-
-    /**
-     * The optional group a field belongs too
-     */
-    group?: string;
-
-    /**
-     * When defined, the value is added as a prefix to the fieldPath to defined the localization tag.
-     */
-    fieldPrefixTag?: IFormFieldGroupTypes | string;
-
-    /**
-     * When defined, this tag is used for localization
-     */
-    localizationTag?: string;
-
-    /**
-     * Default: "string".
-     */
-    fieldType: FormFieldType;
-
-    /**
-     * Override default localization.
-     */
-    fieldDescription?: string;
-
-    /**
-     * Default: false
-     */
-    mandatory?: boolean;
-
-    /**
-     * Default: false
-     */
-    readOnly?: boolean;
-
-    /**
-     * An optional field path value. The value of this field depends on the value of the dependsOn field.
-     */
-    dependsOn?: string;
-
-    /**
-     * When defined a function that returns the visibility of the field according to the dependsOn value.
-     */
-    dependsOnVisibility?: boolean | ((dependsOnValue?: any) => boolean);
-
-    /**
-     * When defined a function that returns the visibility of the field.
-     */
-    visibility?: boolean | ((context: IWidgetEditorPublicContext) => boolean);
-
-    /**
-     * When defined the content of the field is translated (using context.translateContent).
-     */
-    translated?: boolean;
-
 }
 
 /**
@@ -566,7 +593,9 @@ export interface IFormEmbeddedFieldDef<T extends FormFieldObject> extends IFormF
 
     editorConf: {
 
-        meta: FormFields<T>[];
+        fieldPathPrefix: string;
+
+        meta: FormFields<T>;
 
     }
 
@@ -742,59 +771,6 @@ export interface IFormWidgetVariantFieldDef extends IFormFieldDef<string> {
     fieldType: "widgetVariant",
 
 }
-
-export function formFieldsFilter(formFields: FormFieldDef[] | FormFields<FormFieldObject> | undefined, filter: (field: FormFieldDef) => boolean): FormFieldDef[] {
-    if (formFields == null)
-        return [];
-    if (Array.isArray(formFields)) {
-        return formFields.filter(filter)
-    }
-
-    // TODO .. garbage
-    const fields: FormFieldDef[] = [];
-    for (const key in formFields as FormFields<FormFieldObject>) {
-        fields.push({...{fieldPath: key}, ...formFields[key]})
-    }
-
-    return fields.filter(filter);
-}
-
-export function formFieldsForEach(formFields: FormFieldDef[] | FormFields<FormFieldObject> | undefined, callback: (field: FormFieldDef) => void): void {
-    if (formFields == null)
-        return;
-    if (Array.isArray(formFields)) {
-        return formFields.forEach(callback)
-    }
-
-    // TODO .. garbage
-    for (const key in formFields as FormFields<FormFieldObject>) {
-        callback({...{fieldPath: key}, ...formFields[key]})
-    }
-}
-
-export interface FormFieldObject {
-
-}
-
-
-export type FormFields<T extends FormFieldObject> = {
-    [key in keyof T]-?:   // make the key mandatory even though the field is optional
-    (
-        // defaultValue mandatory if the field is non nullable in T
-        undefined extends NonNullable<T>[key] ? { defaultValue?: any } : { defaultValue: unknown }
-        )
-    &
-    (
-        // matching T type with FormField type
-        Required<T>[key] extends boolean ? Omit<IFormBooleanFieldDef, 'fieldPath'> :
-            Required<T>[key] extends number ? Omit<IFormNumberFieldDef, 'fieldPath'> :
-                Required<T>[key] extends string ? Omit<IFormStringFieldDef, 'fieldPath'> :
-                    Required<T>[key] extends string[] ? Omit<IFormOptionFieldDef, 'fieldPath'> | Omit<IFormPaletteEditorFieldDef, 'fieldPath'> :
-                        Required<T>[key] extends FormFieldObject ? Omit<IFormEmbeddedFieldDef<Required<T>[key]>, 'fieldPath'> :
-                            never /* type not supported */
-        )
-};
-
 
 // ---------------------------------------------------------------------------------------------------------------------
 //      Allows for typing the field meta definitions.

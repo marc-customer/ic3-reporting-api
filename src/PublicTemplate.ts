@@ -12,21 +12,49 @@ type ChartTemplateWidgetProps = any;
 /**
  * Actual instance used by our React Widget component.
  */
-export interface IPublicChartTemplate<OPTIONS extends IChartVisualizationInput | IChartVisualizationInputWithoutQuery> {
+export interface IPublicReactChartTemplate<T extends FormFieldObject> {
 
     /**
      * here goes the rendering, if it´s a react component return a ReactElement
      */
-    render: (options: OPTIONS, widgetHeader: string, props: ChartTemplateWidgetProps) => ReactElement | void;
+    render: (options: IChartVisualizationTypedInput<T>, widgetHeader: string, props: ChartTemplateWidgetProps) => ReactElement;
+
+}
+
+export interface IPublicJsChartTemplate<T extends FormFieldObject> {
+
+    /**
+     * here goes the rendering, if it´s a react component return a ReactElement
+     */
+    render: (options: IChartVisualizationTypedInput<T>, widgetHeader: string, props: ChartTemplateWidgetProps) => void;
 
     dispose: () => void;
 
 }
 
+export type IPublicWidgetTemplateDefinition<T extends FormFieldObject> =
+    IPublicWidgetReactTemplateDefinition<T>
+    | IPublicWidgetJsTemplateDefinition<T>;
+
+export interface IPublicWidgetReactTemplateDefinition<T extends FormFieldObject> extends IPublicCommonWidgetTemplateDefinition {
+
+    jsCode: (context: IWidgetPublicContext) => IPublicReactChartTemplate<T>;
+
+    reactComponent: true;
+
+}
+
+export interface IPublicWidgetJsTemplateDefinition<T extends FormFieldObject> extends IPublicCommonWidgetTemplateDefinition {
+
+    jsCode: (context: IWidgetPublicContext, container: any) => IPublicJsChartTemplate<T>;
+
+    reactComponent?: false;
+}
+
 /**
  * Definition - static - of a widget template
  */
-export interface IPublicWidgetTemplateDefinition<OPTIONS extends IChartVisualizationInput | IChartVisualizationInputWithoutQuery> {
+interface IPublicCommonWidgetTemplateDefinition {
 
     /**
      * Determine the widget icon in the widget infos.
@@ -110,11 +138,6 @@ export interface IPublicWidgetTemplateDefinition<OPTIONS extends IChartVisualiza
      * */
     lazyLibs?: string;
 
-    /**
-     * Actual JS code implementing for example a chart.
-     */
-    jsCode: (context: IWidgetPublicContext, container: any) => IPublicChartTemplate<OPTIONS>;
-
     reactComponent?: boolean;
 
     /**
@@ -140,18 +163,22 @@ export enum WidgetTemplateDefinitionType {
 }
 
 
-export interface IChartVisualizationInputWithoutQuery {
+export interface IChartVisualizationInput {
 
     mapping: ChartTemplateDataMapping;
-    options: { [key: string]: any };
-
-}
-
-export interface IChartVisualizationInput extends IChartVisualizationInputWithoutQuery {
-
     table: ITidyTable;
     inter: ITidyTableInteraction;
 
+    options: { [key: string]: any };
+}
+
+export interface IChartVisualizationTypedInput<T extends FormFieldObject> {
+
+    table: ITidyTable;
+    inter: ITidyTableInteraction;
+    mapping: ChartTemplateDataMapping;
+
+    options: T;
 }
 
 /**
